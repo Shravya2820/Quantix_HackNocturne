@@ -1,0 +1,24 @@
+{
+  "name": "quantix_hacknocturne",
+  "version": "1.0.0",
+  "description": "TrustChain is a platform designed to protect freelancers from delayed or unpaid work while helping them build a verifiable financial reputation.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Shravya2820/Quantix_HackNocturne.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Shravya2820/Quantix_HackNocturne/issues"
+  },
+  "homepage": "https://github.com/Shravya2820/Quantix_HackNocturne#readme",
+  "dependencies": {
+    "dotenv": "^17.3.1",
+    "ethers": "^6.16.0"
+  }
+}
