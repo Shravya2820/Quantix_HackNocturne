@@ -1,0 +1,46 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  --color-bg-main: #02141B;
+  --color-bg-mid: #031E26;
+  --color-bg-highlight: #032B33;
+  --color-bg-navbar: #0A141A;
+  --color-border-main: #1B2A32;
+
+  --color-accent-primary: #1ED2D6;
+  --color-accent-hover: #12B7BD;
+  --color-accent-secondary: #00C6D7;
+
+  --color-btn-primary: #22D3EE;
+  --color-btn-hover: #06B6D4;
+
+  --color-text-primary: #E5E7EB;
+  --color-text-muted: #9CA3AF;
+
+  --color-tag-bg: #0F2B33;
+  --color-card-bg: #031E26;
+}
+
+@layer base {
+  body {
+    @apply bg-bg-main text-text-primary font-sans;
+  }
+
+  h1 { @apply text-[40px] font-bold tracking-tight; }
+  h2 { @apply text-[28px] font-semibold tracking-tight; }
+  h3 { @apply text-[20px] font-medium; }
+  p { @apply text-base text-text-muted; }
+  .caption { @apply text-[13px] text-text-muted; }
+}
+
+.heading-gradient {
+  @apply bg-gradient-to-r from-[#00E5FF] via-[#2FB7FF] via-[#5A8BFF] to-[#8B5CF6] bg-clip-text text-transparent;
+}
+
+.glass-card {
+  @apply bg-card-bg border border-border-main rounded-2xl shadow-md;
+}
+
