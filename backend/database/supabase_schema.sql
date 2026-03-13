@@ -8,6 +8,7 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 CREATE TABLE public.profiles (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     wallet_addr TEXT UNIQUE NOT NULL,
+    role TEXT NOT NULL CHECK (role IN ('client', 'freelancer')),
     trust_score NUMERIC DEFAULT 0,
     bank_json JSONB,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
