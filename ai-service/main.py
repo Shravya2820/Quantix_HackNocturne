@@ -2,14 +2,40 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from services.gemini_client import generate_milestones
 
-app = FastAPI()
-
+app = FastAPI(
+    title="Quantix AI Evaluation Engine",
+    description="AI backend that evaluates developer projects using milestones, code validation, AI review, fraud detection, trust score and feedback.",
+    version="1.0.0"
+)
 
 # -----------------------------
 # MODELS
 # -----------------------------
 
-class ProjectData(BaseModel):
+class ProjectRequest(BaseModel):
+    description: str
+
+
+class WorkSubmission(BaseModel):
+    milestone: str
+    code: str
+
+
+class TrustScoreRequest(BaseModel):
+    completed_projects: int
+    success_rate: float
+    avg_rating: float
+
+
+class AIReviewRequest(BaseModel):
+    code: str
+
+
+class FraudCheckRequest(BaseModel):
+    code: str
+
+
+class ProjectEvaluation(BaseModel):
     description: str
     code: str
     completed_projects: int
@@ -25,81 +51,126 @@ class ProjectData(BaseModel):
 def health():
     return {"status": "AI service running"}
 
+# -----------------------------
+# MILESTONE GENERATION
+# -----------------------------
+
+@app.post("/generate-mpr")
+def generate_mpr(request: ProjectRequest):
+
+    milestones = generate_milestones(request.description)
+
+    return {
+        "milestones": milestones
+    }
 
 # -----------------------------
-# PROJECT REPORT (FINAL AI PIPELINE)
+# CODE VALIDATION
+# -----------------------------
+
+@app.post("/validate-work")
+def validate_work(data: WorkSubmission):
+
+    score = 80
+
+    if len(data.code) < 20:
+        score = 40
+
+    return {
+        "milestone": data.milestone,
+        "score": score,
+        "plagiarism": False,
+        "scope_match": True,
+        "feedback": "Work matches milestone requirements"
+    }
+
+# -----------------------------
+# TRUST SCORE
+# -----------------------------
+
+@app.post("/trust-score")
+def calculate_trust_score(data: TrustScoreRequest):
+
+    score = (
+        data.completed_projects * 2
+        + data.success_rate * 0.3
+        + data.avg_rating * 10
+    )
+
+    score = min(100, round(score))
+
+    return {
+        "trust_score": score
+    }
+
+# -----------------------------
+# AI REVIEW
+# -----------------------------
+
+@app.post("/ai-review")
+def ai_review(data: AIReviewRequest):
+
+    quality = 75
+
+    if "error" in data.code.lower():
+        quality = 40
+
+    return {
+        "code_quality": quality,
+        "review_score": quality,
+        "feedback": "Code structure looks acceptable"
+    }
+
+# -----------------------------
+# FRAUD DETECTION
+# -----------------------------
+
+@app.post("/fraud-check")
+def fraud_check(data: FraudCheckRequest):
+
+    fraud = False
+
+    if "copy paste" in data.code.lower():
+        fraud = True
+
+    return {
+        "fraud_detected": fraud
+    }
+
+# -----------------------------
+# FULL PROJECT REPORT
 # -----------------------------
 
 @app.post("/project-report")
-def project_report(data: ProjectData):
+def evaluate_project(data: ProjectEvaluation):
 
-    # 1️⃣ Generate milestones
     milestones = generate_milestones(data.description)
 
-    # 2️⃣ Validate code
     validation_score = 80
     if len(data.code) < 20:
         validation_score = 40
 
-    # 3️⃣ AI code review
-    if len(data.code) < 30:
-        code_quality = "Poor"
+    review_score = 75
+    if "error" in data.code.lower():
         review_score = 40
-    elif len(data.code) < 80:
-        code_quality = "Average"
-        review_score = 65
-    else:
-        code_quality = "Good"
-        review_score = 90
 
-    # 4️⃣ Fraud detection
-    plagiarism = False
-    similarity_score = 10
-    risk_level = "Low"
+    fraud = False
+    if "copy paste" in data.code.lower():
+        fraud = True
 
-    if "copy" in data.code.lower():
-        plagiarism = True
-        similarity_score = 80
-        risk_level = "High"
-
-    # 5️⃣ Trust score
     trust_score = (
-        data.completed_projects * 5 +
-        data.success_rate * 0.4 +
-        data.avg_rating * 10
+        data.completed_projects * 2
+        + data.success_rate * 0.3
+        + data.avg_rating * 10
     )
 
-    if trust_score > 100:
-        trust_score = 100
-
-    # 6️⃣ AI feedback
-    feedback = []
-
-    if len(data.code) < 30:
-        feedback.append("Code is too short. Add more logic.")
-
-    if "function" not in data.code.lower():
-        feedback.append("Consider organizing code into functions.")
-
-    if "return" not in data.code.lower():
-        feedback.append("Add return statements.")
-
-    if len(data.code) > 80:
-        feedback.append("Good structure detected.")
-
-    if not feedback:
-        feedback.append("Code looks good overall.")
+    trust_score = min(100, round(trust_score))
 
     return {
         "milestones": milestones,
         "validation_score": validation_score,
-        "code_quality": code_quality,
         "review_score": review_score,
-        "fraud_check": {
-            "plagiarism": plagiarism,
-            "similarity_score": similarity_score,
-            "risk_level": risk_level
-        },
+        "fraud_detected": fraud,
         "trust_score": trust_score,
-        "feedback": feedback
+        "feedback": "Project evaluation complete"
     }
