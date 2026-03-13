@@ -1,0 +1,101 @@
+{
+  "entities": {
+    "Profile": {
+      "title": "Profile",
+      "description": "User profile information including role and trust score.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "wallet_addr": { "type": "string" },
+        "trust_score": { "type": "number" },
+        "role": { "type": "string", "enum": ["client", "freelancer"] },
+        "skills": { "type": "array", "items": { "type": "string" } },
+        "bio": { "type": "string" },
+        "email": { "type": "string" },
+        "name": { "type": "string" }
+      },
+      "required": ["id", "role"]
+    },
+    "Project": {
+      "title": "Project",
+      "description": "Project details and status.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "client_id": { "type": "string" },
+        "freelancer_id": { "type": "string" },
+        "status": { "type": "string", "enum": ["draft", "open", "locked", "completed", "disputed"] },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "budget": { "type": "number" },
+        "sc_addr": { "type": "string" }
+      },
+      "required": ["id", "client_id", "title", "status"]
+    },
+    "Milestone": {
+      "title": "Milestone",
+      "description": "Project milestones with deadlines and amounts.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "project_id": { "type": "string" },
+        "title": { "type": "string" },
+        "description": { "type": "string" },
+        "amount": { "type": "number" },
+        "deadline": { "type": "string", "format": "date-time" },
+        "status": { "type": "string", "enum": ["pending", "in-progress", "submitted", "approved", "rejected"] },
+        "attempts": { "type": "number" }
+      },
+      "required": ["id", "project_id", "title", "amount", "status"]
+    },
+    "Submission": {
+      "title": "Submission",
+      "description": "Work submission for a milestone.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "milestone_id": { "type": "string" },
+        "ipfs_hash": { "type": "string" },
+        "ai_report": { "type": "string" },
+        "github_repo": { "type": "string" },
+        "google_drive_link": { "type": "string" }
+      },
+      "required": ["id", "milestone_id"]
+    },
+    "Dispute": {
+      "title": "Dispute",
+      "description": "Dispute details for a project or milestone.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string" },
+        "milestone_id": { "type": "string" },
+        "summary": { "type": "string" },
+        "reason": { "type": "string" },
+        "evidence_links": { "type": "array", "items": { "type": "string" } }
+      },
+      "required": ["id", "milestone_id", "reason"]
+    }
+  },
+  "firestore": {
+    "/profiles/{userId}": {
+      "schema": "Profile",
+      "description": "User profiles."
+    },
+    "/projects/{projectId}": {
+      "schema": "Project",
+      "description": "Project listings."
+    },
+    "/milestones/{milestoneId}": {
+      "schema": "Milestone",
+      "description": "Project milestones."
+    },
+    "/submissions/{submissionId}": {
+      "schema": "Submission",
+      "description": "Work submissions."
+    },
+    "/disputes/{disputeId}": {
+      "schema": "Dispute",
+      "description": "Disputes."
+    }
+  }
+}

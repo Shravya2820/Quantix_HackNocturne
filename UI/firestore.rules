@@ -1,0 +1,125 @@
+// ===============================================================
+// Assumed Data Model
+// ===============================================================
+//
+// Collection: profiles
+// Fields:
+//   - id: string (required)
+//   - wallet_addr: string
+//   - trust_score: number
+//   - role: string (required, enum: ['client', 'freelancer'])
+//   - skills: list
+//   - bio: string
+//   - email: string
+//   - name: string
+//
+// Collection: projects
+// Fields:
+//   - id: string (required)
+//   - client_id: string (required)
+//   - freelancer_id: string
+//   - status: string (required, enum: ['draft', 'open', 'locked', 'completed', 'disputed'])
+//   - title: string (required)
+//   - description: string
+//   - budget: number
+//   - sc_addr: string
+//
+// Collection: milestones
+// Fields:
+//   - id: string (required)
+//   - project_id: string (required)
+//   - title: string (required)
+//   - description: string
+//   - amount: number (required)
+//   - deadline: string
+//   - status: string (required, enum: ['pending', 'in-progress', 'submitted', 'approved', 'rejected'])
+//   - attempts: number
+//
+// ===============================================================
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ===============================================================
+    // Helper Functions
+    // ===============================================================
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isAuthenticated() && request.auth.uid == userId;
+    }
+
+    function isAdmin() {
+      return isAuthenticated() &&
+        (get(/databases/$(database)/documents/profiles/$(request.auth.uid)).data.role == 'admin' ||
+         (request.auth.token.email == "shravyanbhat2020@gmail.com" && request.auth.token.email_verified == true));
+    }
+
+    function isValidEmail(email) {
+      return email is string && email.matches("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    }
+
+    function hasOnlyAllowedFields(fields) {
+      return request.resource.data.keys().hasOnly(fields);
+    }
+
+    // ===============================================================
+    // Domain Validators
+    // ===============================================================
+
+    function isValidProfile(data) {
+      return hasOnlyAllowedFields(['id', 'wallet_addr', 'trust_score', 'role', 'skills', 'bio', 'email', 'name']) &&
+             data.role in ['client', 'freelancer'] &&
+             (data.email == null || isValidEmail(data.email));
+    }
+
+    function isValidProject(data) {
+      return hasOnlyAllowedFields(['id', 'client_id', 'freelancer_id', 'status', 'title', 'description', 'budget', 'sc_addr']) &&
+             data.status in ['draft', 'open', 'locked', 'completed', 'disputed'] &&
+             data.title is string && data.title.size() > 0 && data.title.size() < 200;
+    }
+
+    function isValidMilestone(data) {
+      return hasOnlyAllowedFields(['id', 'project_id', 'title', 'description', 'amount', 'deadline', 'status', 'attempts']) &&
+             data.status in ['pending', 'in-progress', 'submitted', 'approved', 'rejected'] &&
+             data.amount is number && data.amount >= 0;
+    }
+
+    // ===============================================================
+    // Rules
+    // ===============================================================
+
+    match /profiles/{userId} {
+      allow read: if isAuthenticated();
+      allow create: if isOwner(userId) && isValidProfile(request.resource.data);
+      allow update: if (isOwner(userId) || isAdmin()) && isValidProfile(request.resource.data);
+    }
+
+    match /projects/{projectId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.resource.data.client_id == request.auth.uid && isValidProject(request.resource.data);
+      allow update: if isAuthenticated() && (resource.data.client_id == request.auth.uid || resource.data.freelancer_id == request.auth.uid || isAdmin()) && isValidProject(request.resource.data);
+    }
+
+    match /milestones/{milestoneId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && isValidMilestone(request.resource.data);
+      allow update: if isAuthenticated() && isValidMilestone(request.resource.data);
+    }
+
+    match /submissions/{submissionId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isAuthenticated();
+    }
+
+    match /disputes/{disputeId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isAdmin();
+    }
+  }
+}
