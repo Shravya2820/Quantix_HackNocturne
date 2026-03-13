@@ -3,6 +3,7 @@ from flask_cors import CORS
 from dotenv import load_dotenv
 
 from auth.routes import auth_bp
+from blockchain.routes import blockchain_bp
 
 load_dotenv()
 
@@ -11,6 +12,7 @@ CORS(app)
 
 # Register Blueprints
 app.register_blueprint(auth_bp)
+app.register_blueprint(blockchain_bp)
 
 if __name__ == '__main__':
     import os

@@ -1,7 +1,7 @@
 import json
 from web3 import Web3
 
-RPC_URL = "https://rpc.sepolia.org"
+RPC_URL = "https://sepolia.infura.io/v3/18aefde49b244167a8963c37c5e0fe4c"
 
 w3 = Web3(Web3.HTTPProvider(RPC_URL))
 
