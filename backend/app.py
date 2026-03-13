@@ -13,6 +13,8 @@ CORS(app)
 # Register Blueprints
 app.register_blueprint(auth_bp)
 app.register_blueprint(blockchain_bp)
+from api.project_routes import project_bp
+app.register_blueprint(project_bp)
 
 if __name__ == '__main__':
     import os
