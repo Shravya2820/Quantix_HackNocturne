@@ -12,7 +12,11 @@ TrustChain addresses these challenges using *escrow-based smart contracts* and a
 Client payments are *locked before work begins* and automatically released when milestones are approved. At the same time, freelancers build an *on-chain work history* that contributes to a *TrustChain Credit Score*.
 
 ---
+## 🎥 Project Demo
 
+[![Watch the Demo](Thumbnail.jpeg)](https://drive.google.com/file/d/1DWH3o1ijgf2DxcN0SYxhUrfaQWguup25/view?usp=sharing)
+
+---
 # Problem Statement
 
 Millions of freelancers and gig workers face:
