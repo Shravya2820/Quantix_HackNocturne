@@ -131,7 +131,7 @@ Freelancer's *TrustChain score* updates based on successful completion.
 
 # System Architecture
 
-
+```
 Frontend (Web / Mobile)
 │
 ▼
@@ -155,12 +155,12 @@ Database
 Smart Contract Layer
 (Escrow Payment Logic)
 
-
+```
 ---
 
 # Repository Structure
 
-
+```
 trustchain/
 │
 ├── frontend/
@@ -184,7 +184,7 @@ trustchain/
 │
 └── README.md
 
-
+```
 ---
 
 # Edge Cases Considered
