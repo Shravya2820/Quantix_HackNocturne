@@ -1,7 +1,7 @@
 # TrustChain
 
 [![Watch the Demo](Thumbnail.jpeg)](https://drive.google.com/file/d/1DWH3o1ijgf2DxcN0SYxhUrfaQWguup25/view?usp=sharing)
-## 🎥 Project Demo
+## Click on the Thumbnail for project Demo🎥
 
 ---
 
